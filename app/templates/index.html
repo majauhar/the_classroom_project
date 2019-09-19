@@ -1,15 +1,8 @@
-<html>
-    <head>
-        {% if title %}
-        <title>{{ title }} - The ClassRoom</title>
-        {% else %}
-        <title>Welcome to The ClassRoom!</title>
-        {% endif %}
-    </head>
-    <body>
-        <h1>Hello, {{ student.username }}!</h1>
-        {% for assignment in assignments %}
-        <div>{{ assignment.author.username }}: <b>{{ assignment.body }}</b></div>
-        {% endfor %}
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ student.username }}!</h1>
+    {% for assignment in assignments %}
+    <div><p>{{ assignment.author.username }}: <b>{{ assignment.body }}</b></p></div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,14 @@
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - the ClassRoom</title>
+      {% else %}
+      <title>Welcome to the ClassRoom</title>
+      {% endif %}
+    </head>
+    <body>
+        <div class="nav-bar">ClassRoom: <a href="/index">Home</a></div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>
