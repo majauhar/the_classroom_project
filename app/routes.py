@@ -4,7 +4,7 @@ from app import app
 
 @app.route('/')
 def home():
-    return "<h1>This is homepage </h1>"
+    return render_template('app_home.html', title='ClassRoom | Welcome')
 @app.route('/index')
 def index():
     student = {'username': 'Miguel'}
