@@ -8,7 +8,12 @@
     </head>
     <body>
         <div class="nav-bar">ClassRoom: <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('login') }}">Log In</a></div>
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('teacher_login') }}">for teachers</a> <a href="{{ url_for('student_login') }}">for students</a>
+        {% else %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+        </div>
         <hr>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
