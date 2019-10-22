@@ -2,46 +2,47 @@ from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sqlalchemy.orm import relationship, backref
 
-class Teacher(UserMixin, db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    #-- making a relationship between Teacher and his course
-    courses = db.relationship('Course', backref='author', lazy='dynamic')
+    access = db.Column(db.Integer)
+    courses = relationship('Course', secondary='members')
+    
 
     def __repr__(self):
-        return '<Professor {}>'.format(self.username)
-
+        return '<User {}>'.format(self.username)
+    def set_access(self, access = 0):
+        self.access = access
+    def is_teacher(self):
+        return self.access == 1
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    coursetitle = db.Column(db.String(32), index=True)
-
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'))
-    #-- making a relationship between a course and its assignment
-    assignments = db.relationship('Assignment', backref='author', lazy='dynamic')
-
-class Student(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
+    title = db.Column(db.String(64), index = True)
+    code = db.Column(db.String(64), index = True, unique = True)
+    users = relationship('User', secondary='members')
+    assignments = db.relationship('Assignment', backref='course', lazy = 'dynamic')
 
     def __repr__(self):
-        return '<Student {}>'.format(self.username)
+        return '{} : {}'.format(self.title, self.code)
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+class Member(db.Model):
+    __tablename__ = 'members'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+
+    user = relationship(User, backref=backref('members', cascade="all, delete-orphan"))
+    course = relationship(Course, backref=backref('members', cascade="all, delete-orphan"))
 
 class Assignment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,4 +55,4 @@ class Assignment(db.Model):
 
 @login.user_loader
 def load_user(id):
-    return Teacher.query.get(int(id))
+    return User.query.get(int(id))

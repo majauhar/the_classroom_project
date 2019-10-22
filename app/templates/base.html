@@ -10,7 +10,7 @@
         <div class="nav-bar">
         {% if current_user.is_anonymous %}
         ClassRoom: <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('teacher_login') }}">for teachers</a> <a href="{{ url_for('student_login') }}">for students</a>
+        <a href="{{ url_for('login') }}">Log In</a>
         {% else %}
         ClassRoom: <a href="{{ url_for('index') }}">Home</a>
         <a href="{{ url_for('logout') }}">Logout</a>
