@@ -5,6 +5,14 @@
       {% else %}
       <title>Welcome to the ClassRoom</title>
       {% endif %}
+      <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     </head>
     <body>
         <div class="nav-bar">
@@ -12,8 +20,9 @@
         ClassRoom: <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('login') }}">Log In</a>
         {% else %}
-        ClassRoom: <a href="{{ url_for('index') }}">Home</a>
+        ClassRoom: <a href="{{ url_for('course') }}">Home</a>
         <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('newcourse') }}">NEW_COURSE</a>
         {% endif %}
         </div>
         <hr>

@@ -31,5 +31,10 @@ class NewCourse(FlaskForm):
     title = StringField('Course Title', validators = [DataRequired()])
     code = StringField('Course Code', validators = [DataRequired()])
     submit = SubmitField('Submit')
+
+    def validate_code(self, code):
+        code = Course.query.filter_by(code=code.data).first()
+        if code is not None:
+            raise ValidationError('This course is already running!')
     
 

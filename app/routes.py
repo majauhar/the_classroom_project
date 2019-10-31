@@ -1,6 +1,6 @@
 from flask import render_template
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, NewCourse
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Course, Assignment
@@ -36,7 +36,7 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        return redirect(url_for('course'))
     return render_template('login.html', title='Sign In', form=form)
 
 
@@ -58,3 +58,34 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/course')
+@login_required
+def course():
+    courses = current_user.courses
+    user = current_user
+    return render_template('courses.html', title='Courses', courses=courses, user=user)
+
+@app.route('/newcourse',  methods=['GET', 'POST'])
+@login_required
+def newcourse():
+    form = NewCourse()
+    user = current_user
+    if form.validate_on_submit():
+        course = Course(title=form.title.data, code=form.code.data, instructor=user.id)
+        user.courses.append(course)
+        db.session.add(course)
+        db.session.commit()
+        
+        flash('Congratulations, you have created a new course!')
+        return redirect(url_for('course'))
+    return render_template('newcourse.html', title='New Course', form=form)
+
+@app.route('/opencourse/<code>')
+@login_required
+def opencourse(code):
+    # user = current_user
+    course = Course.query.filter_by(code=code).first_or_404()
+    assignments = course.assignments.all()
+    # instructor = User.query.filter_by(id=course.instructor).first_or_404()
+    return render_template('course.html', assignments = assignments)

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if assignments %}
+    {% for assignment in assignments %}
+    <p>{{ assignment.body }}</p>
+    {% endfor %}
+    {% else %}
+    <p>No assignments yet!</p>
+    {% endif %}
+<h1>Hello, this is a course page</h1>
+{% endblock %}

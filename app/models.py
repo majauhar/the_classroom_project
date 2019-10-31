@@ -9,10 +9,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    access = db.Column(db.Integer)
     courses = relationship('Course', secondary='members')
     
-
     def __repr__(self):
         return '<User {}>'.format(self.username)
     def set_access(self, access = 0):
@@ -26,10 +24,11 @@ class User(UserMixin, db.Model):
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(64), index = True)
+    title = db.Column(db.String(64), index = True, unique = True)
     code = db.Column(db.String(64), index = True, unique = True)
     users = relationship('User', secondary='members')
     assignments = db.relationship('Assignment', backref='course', lazy = 'dynamic')
+    instructor = db.Column(db.Integer)
 
     def __repr__(self):
         return '{} : {}'.format(self.title, self.code)
