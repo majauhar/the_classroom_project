@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+    <h1>Instructor : XYZ</h1>
     {% if assignments %}
     {% for assignment in assignments %}
     <p>{{ assignment.body }}</p>
@@ -9,5 +9,12 @@
     {% else %}
     <p>No assignments yet!</p>
     {% endif %}
-<h1>Hello, this is a course page</h1>
+    <h1>Hello, this is a course page</h1>
+    <!--showing all the students of the course-->
+    {% if students %}
+    {% for student in students %}
+    <p>{{ student.username }}</p>
+    {% endfor %}
+    {% endif %}
+    
 {% endblock %}

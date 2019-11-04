@@ -84,8 +84,21 @@ def newcourse():
 @app.route('/opencourse/<code>')
 @login_required
 def opencourse(code):
-    # user = current_user
+    user = current_user
     course = Course.query.filter_by(code=code).first_or_404()
     assignments = course.assignments.all()
     # instructor = User.query.filter_by(id=course.instructor).first_or_404()
-    return render_template('course.html', assignments = assignments)
+    students = course.users
+    return render_template('course.html', assignments = assignments, students=students)
+
+@app.route('/deletecourse/<code>')
+@login_required
+def deletecourse(code):
+    user = current_user
+    course = Course.query.filter_by(code=code).first_or_404()
+    user.courses.remove(course)
+    db.session.delete(course)
+    db.session.commit()
+
+    flash('This course has been deleted!')
+    return redirect(url_for('course'))
