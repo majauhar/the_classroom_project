@@ -1,20 +1,27 @@
 {% extends "base.html" %}
 
+
 {% block content %}
-    <h1>Instructor : XYZ</h1>
     {% if assignments %}
     {% for assignment in assignments %}
-    <p>{{ assignment.body }}</p>
+    <p><a href="{{ url_for('openassignment', code=course.code, id=assignment.id) }}">{{ assignment.title }}</a></p>
     {% endfor %}
     {% else %}
     <p>No assignments yet!</p>
     {% endif %}
-    <h1>Hello, this is a course page</h1>
+{% endblock %}
+    <!-- <h1>Hello, this is a course page</h1> -->
     <!--showing all the students of the course-->
+{% block c %}
     {% if students %}
     {% for student in students %}
     <p>{{ student.username }}</p>
     {% endfor %}
     {% endif %}
-    
 {% endblock %}
+
+{% block a %}
+    <div><a href="{{ url_for('deletecourse', code=course.code) }}">Delete the course</a></div>
+    <div><a href="{{ url_for('newassignment', code=course.code) }}">Add a question</a></div>
+{% endblock %}
+    

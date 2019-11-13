@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <p>{{ assignment.body }}</p>
+    <p><a href="{{ url_for('submitassignment',code=course.code, id=assignment.id) }}">Submit a Solution!</a></p>
+    <p><a href="{{ url_for('deleteassignment', code=course.code, id=assignment.id) }}">Delete the assignment</a></p>
+    
+{% endblock %}

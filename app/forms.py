@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
-from app.models import User, Course, Assignment
+from app.models import User, Course, Assignment, Submission
 
 class LoginForm(FlaskForm):
     username = StringField('University ID', validators=[DataRequired()])
@@ -38,3 +38,17 @@ class NewCourse(FlaskForm):
             raise ValidationError('This course is already running!')
     
 
+# assignment form
+class NewAssignment(FlaskForm):
+    title = StringField('Assignment Title', validators = [DataRequired()])
+    body = StringField('Assignment body', validators = [DataRequired()])
+    submit = SubmitField('Submit')
+
+# join course form
+class JoinCourse(FlaskForm):
+    code = StringField('Course Code', validators = [DataRequired()])
+    submit = SubmitField('Submit')
+# submission form
+class SubmitAnswer(FlaskForm):
+    body = StringField('Submission body', validators = [DataRequired()])
+    submit = SubmitField('Submit')

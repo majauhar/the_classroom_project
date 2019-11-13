@@ -1,9 +1,9 @@
 from flask import render_template
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, NewCourse
+from app.forms import LoginForm, RegistrationForm, NewCourse, NewAssignment, JoinCourse, SubmitAnswer
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Course, Assignment
+from app.models import User, Course, Assignment, Submission
 
 
 @app.route('/')
@@ -81,6 +81,23 @@ def newcourse():
         return redirect(url_for('course'))
     return render_template('newcourse.html', title='New Course', form=form)
 
+@app.route('/joincourse',  methods=['GET', 'POST'])
+@login_required
+def joincourse():
+    form = JoinCourse()
+    user = current_user
+    if form.validate_on_submit():
+        course = Course.query.filter_by(code=form.code.data).first_or_404()
+        if course:
+            course.users.append(user)
+            db.session.commit()
+            flash('Class successfully joined!')
+        else:
+            flash('Invalid Code')
+        return redirect(url_for('course'))
+    return render_template('joincourse.html', form=form)
+        
+
 @app.route('/opencourse/<code>')
 @login_required
 def opencourse(code):
@@ -89,7 +106,7 @@ def opencourse(code):
     assignments = course.assignments.all()
     # instructor = User.query.filter_by(id=course.instructor).first_or_404()
     students = course.users
-    return render_template('course.html', assignments = assignments, students=students)
+    return render_template('course.html', assignments = assignments, students=students, course=course)
 
 @app.route('/deletecourse/<code>')
 @login_required
@@ -102,3 +119,60 @@ def deletecourse(code):
 
     flash('This course has been deleted!')
     return redirect(url_for('course'))
+
+
+# new assignment route
+@app.route('/<code>/newassignment',  methods=['GET', 'POST'])
+@login_required
+def newassignment(code):
+    form = NewAssignment()
+    user = current_user
+    course = Course.query.filter_by(code=code).first_or_404()
+    if form.validate_on_submit():
+        assignment = Assignment(title=form.title.data, body=form.body.data)
+        course.assignments.append(assignment)
+        db.session.add(assignment)
+        db.session.commit()
+        
+        flash('Congratulations, you have added a new question!')
+        return redirect(url_for('opencourse', code=code))
+    return render_template('newassignment.html', title='New Assignment', form=form)
+
+
+@app.route('/<code>/openassignment/<id>')
+@login_required
+def openassignment(code, id):
+    user = current_user
+    course = Course.query.filter_by(code=code).first_or_404()
+    assignment = Assignment.query.filter_by(id=id).first_or_404()
+    return render_template('assignment.html', assignment = assignment, course=course)
+@app.route('/<code>/<id>/deleteassignment/')
+@login_required
+def deleteassignment(code, id):
+    # user = current_user
+    assignment = Assignment.query.filter_by(id=id).first_or_404()
+    course = Course.query.filter_by(code=code).first_or_404()
+    course.assignments.remove(assignment)
+    db.session.delete(assignment)
+    db.session.commit()
+
+    flash('The assignment has been deleted!')
+    return redirect(url_for('opencourse', code=code))
+
+@app.route('/<code>/<id>/submit',   methods=['GET', 'POST'])
+@login_required
+def submitassignment(code, id):
+    user = current_user
+    form = SubmitAnswer()
+    assignment = Assignment.query.filter_by(id=id).first_or_404()
+    if form.validate_on_submit():
+        submission = Submission(body=form.body.data, user_id = user.id, assignment_id=id)
+        assignment.submissions.append(submission)
+        user.submissions.append(submission)
+        db.session.add(submission)
+        db.session.commit()
+        
+        flash('Congratulations, you have submitted the solution!')
+        return redirect(url_for('opencourse', code=code))
+    return render_template('assignmentsubmit.html', title='New submission', form=form)
+
