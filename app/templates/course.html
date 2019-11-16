@@ -2,9 +2,23 @@
 
 
 {% block content %}
+    <h3>{{ course }}</h3>
+    <form method="POST" action= "{{ url_for('newassignment', code=course.code) }}">
+        <div class="form-group">
+          <label for="comment" >Add a question:</label>
+
+          <textarea class="form-control" rows="1" id="comment" name="title" placeholder="Enter the Title"></textarea>
+            <br>
+          <textarea class="form-control" rows="5" id="comment" name="body" placeholder="Enter the Body"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
     {% if assignments %}
+    <br>
     {% for assignment in assignments %}
-    <p><a href="{{ url_for('openassignment', code=course.code, id=assignment.id) }}">{{ assignment.title }}</a></p>
+    <div class="list-group">
+    <p><a href="{{ url_for('openassignment', code=course.code, id=assignment.id) }}" class="list-group-item list-group-item-action">{{ assignment.title }}</a></p>
+    </div>
     {% endfor %}
     {% else %}
     <p>No assignments yet!</p>
@@ -19,9 +33,14 @@
     {% endfor %}
     {% endif %}
 {% endblock %}
-
 {% block a %}
+    {% if user.id == instructor.id %}
     <div><a href="{{ url_for('deletecourse', code=course.code) }}">Delete the course</a></div>
     <div><a href="{{ url_for('newassignment', code=course.code) }}">Add a question</a></div>
+    {% else %}
+    <div><a href="{{ url_for('leavecourse', code=course.code) }}">Leave the course</a></div>
+
+    {% endif %}
+
 {% endblock %}
     

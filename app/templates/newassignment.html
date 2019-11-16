@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>New Assignment</h1>
-    <form action="" method="post" novalidate>
+    <!-- <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
             {{ form.title.label }}<br>
@@ -18,5 +18,14 @@
             {% endfor %}
         </p>
         <p>{{ form.submit() }}</p>
-    </form>
+    </form> -->
+    <form action="">
+            <div class="form-group">
+              <label for="comment">Add a question:</label>
+              <textarea class="form-control" rows="1" id="comment" name="text"></textarea>
+    
+              <textarea class="form-control" rows="5" id="comment" name="text"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
 {% endblock %}

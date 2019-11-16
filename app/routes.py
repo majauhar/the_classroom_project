@@ -1,7 +1,7 @@
 from flask import render_template
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, NewCourse, NewAssignment, JoinCourse, SubmitAnswer
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Course, Assignment, Submission
 
@@ -96,7 +96,18 @@ def joincourse():
             flash('Invalid Code')
         return redirect(url_for('course'))
     return render_template('joincourse.html', form=form)
-        
+
+@app.route('/leavecourse/<code>',  methods=['GET', 'POST'])
+@login_required
+def leavecourse(code):
+    user = current_user
+    course = Course.query.filter_by(code=code).first_or_404()
+    course.users.remove(user)
+    db.session.commit()
+    flash('Class successfully left!')
+    
+    return redirect(url_for('course'))
+    # return render_template('joincourse.html', form=form)
 
 @app.route('/opencourse/<code>')
 @login_required
@@ -104,9 +115,9 @@ def opencourse(code):
     user = current_user
     course = Course.query.filter_by(code=code).first_or_404()
     assignments = course.assignments.all()
-    # instructor = User.query.filter_by(id=course.instructor).first_or_404()
+    instructor = User.query.filter_by(id=course.instructor).first_or_404()
     students = course.users
-    return render_template('course.html', assignments = assignments, students=students, course=course)
+    return render_template('course.html', assignments = assignments, students=students, course=course, user=user, instructor=instructor)
 
 @app.route('/deletecourse/<code>')
 @login_required
@@ -125,18 +136,19 @@ def deletecourse(code):
 @app.route('/<code>/newassignment',  methods=['GET', 'POST'])
 @login_required
 def newassignment(code):
-    form = NewAssignment()
+    # form = NewAssignment()
     user = current_user
     course = Course.query.filter_by(code=code).first_or_404()
-    if form.validate_on_submit():
-        assignment = Assignment(title=form.title.data, body=form.body.data)
+    if request.method == "POST":
+        
+        assignment = Assignment(title=request.form.get("title"), body=request.form.get("body"))
         course.assignments.append(assignment)
         db.session.add(assignment)
         db.session.commit()
         
         flash('Congratulations, you have added a new question!')
         return redirect(url_for('opencourse', code=code))
-    return render_template('newassignment.html', title='New Assignment', form=form)
+    # return render_template('newassignment.html', title='New Assignment', form=form)
 
 
 @app.route('/<code>/openassignment/<id>')

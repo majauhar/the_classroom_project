@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ user.username }}</h1>
+<h1>Hello, {{ (user.username).capitalize() }}</h1>
     {% if courses %}
     {% for course in courses %}
     <br>
-    <div><a href="{{ url_for('opencourse', code=course.code) }}">{{ course }}</a></div>
+        <div class="list-group">
+        
+        <a href="{{ url_for('opencourse', code=course.code) }}" class="list-group-item list-group-item-action"><b>{{ course.code }}</b><br>
+        {{ (course.title).capitalize() }}</a></li>
+        
+        </div>
+    
     {% endfor %}
     {% else %}
     <div><p>You are not part of any course!</p></div>

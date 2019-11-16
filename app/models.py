@@ -38,7 +38,7 @@ class Course(db.Model):
     instructor = db.Column(db.Integer)
 
     def __repr__(self):
-        return '{} : {}'.format(self.title, self.code)
+        return '{} : {}'.format(self.title, self.code).capitalize()
 
 
 class Assignment(db.Model):
