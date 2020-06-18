@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% if title %}
         <title>{{ title }} - the ClassRoom</title>
         {% else %}
@@ -52,7 +52,7 @@
         }
         </style>
 </head>
-<body>
+<body style="width: 100%;">
         <nav class="navbar navbar-expand-sm bg-info navbar-dark fixed-top">
             
                 <ul class="navbar-nav">
@@ -60,9 +60,9 @@
                     <a class="navbar-brand" href="#">The Classroom Project</a>
                     <!-- <span class="navbar-text"><h4>The Classroom Project</h4></span> -->
                     {% if current_user.is_anonymous %}               
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">  
                     <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
                     </li>
@@ -96,7 +96,7 @@
     {% block primary %}
     <div class="apphome">
 
-    <img src="/static/library.jpg" alt="Notebook" style="width:100%; max-height: 100vh;">
+    <img class="img-fluid" src="/static/library.jpg" alt="Notebook" width="auto" height="auto">
     <div class="homecontent">
     <!-- <div class="container-fluid"> -->
     {% if current_user.is_anonymous %}
