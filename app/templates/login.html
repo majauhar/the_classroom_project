@@ -1,6 +1,10 @@
 {% extends "base.html" %}
+<!-- {% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+{% endblock %} -->
 
 {% block content %}
+    <div class="content-section">
     <h1>Log In</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
@@ -22,4 +26,5 @@
         <p>{{ form.submit() }}</p>
     </form>
     <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
+    </div>
 {% endblock %}

@@ -11,6 +11,8 @@ relationship_table=db.Table('relationship_table',
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    fullname = db.Column(db.String(64), index=True)
+    faculty_id = db.Column(db.String(16), index=True, unique=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -54,13 +56,16 @@ class Assignment(db.Model):
 
 class Submission(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(300))
+    body = db.Column(db.String(2048))
+    marks = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
 
     def __repr__(self):
         return '<Solution: {}>'.format(self.body)
+    def set_mark(self, marks):
+        self.marks = marks
 
 @login.user_loader
 def load_user(id):

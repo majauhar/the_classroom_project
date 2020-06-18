@@ -3,6 +3,7 @@
 
 {% block content %}
     <h3>{{ course }}</h3>
+    {% if current_user.id == course.instructor %}
     <form method="POST" action= "{{ url_for('newassignment', code=course.code) }}">
         <div class="form-group">
           <label for="comment" >Add a question:</label>
@@ -13,6 +14,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+    {% endif %}
     {% if assignments %}
     <br>
     {% for assignment in assignments %}
@@ -24,23 +26,53 @@
     <p>No assignments yet!</p>
     {% endif %}
 {% endblock %}
-    <!-- <h1>Hello, this is a course page</h1> -->
-    <!--showing all the students of the course-->
-{% block c %}
-    {% if students %}
-    {% for student in students %}
-    <p>{{ student.username }}</p>
-    {% endfor %}
-    {% endif %}
+
+{% block c %}    
+  
+  {% if user.id == instructor.id %}
+  <div class="dropdown">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+          Student List
+        </button>
+        <div class="dropdown-menu">
+          {% if students %}
+          {% for student in students %}
+          <a class="dropdown-item" href="#">{{ student.fullname }}</a>
+          {% endfor %}
+          {% endif %}
+        </div>
+</div>
+  {% endif %}
 {% endblock %}
 {% block a %}
-    {% if user.id == instructor.id %}
-    <div><a href="{{ url_for('deletecourse', code=course.code) }}">Delete the course</a></div>
-    <div><a href="{{ url_for('newassignment', code=course.code) }}">Add a question</a></div>
-    {% else %}
-    <div><a href="{{ url_for('leavecourse', code=course.code) }}">Leave the course</a></div>
+<div class="container">
+  <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">About</button>
+  <div id="demo" class="collapse">
+    This is a simple about the course section.
+  </div>
+</div>
+    <div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+          Options
+        </button>
+        <div class="dropdown-menu">
+          {% if user.id == instructor.id %}
 
-    {% endif %}
+          <a class="dropdown-item" href="{{ url_for('deletecourse', code=course.code) }}">Delete the course</a>
+
+          {% else %}
+          <div><a href="{{ url_for('leavecourse', code=course.code) }}">Leave the course</a></div>
+          {% endif %}
+
+
+
+
+          <!-- <a class="dropdown-item" href="#">Link 2</a>
+          <a class="dropdown-item" href="#">Link 3</a> -->
+        </div>
+      </div>
+    <!-- <div><a href="{{ url_for('deletecourse', code=course.code) }}">Delete the course</a></div> -->
+    <!-- <div><a href="{{ url_for('newassignment', code=course.code) }}">Add a question</a></div> -->
 
 {% endblock %}
     

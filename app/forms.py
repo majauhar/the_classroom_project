@@ -4,13 +4,16 @@ from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User, Course, Assignment, Submission
 
 class LoginForm(FlaskForm):
-    username = StringField('University ID', validators=[DataRequired()])
+    username = StringField('username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
 class RegistrationForm(FlaskForm):
-    username = StringField('University ID', validators=[DataRequired()])
+    username = StringField('username', validators=[DataRequired()])
+    fullname = StringField('Full Name', validators=[DataRequired()])
+    faculty_id = StringField('Faculty ID', validators=[DataRequired()])
+
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
@@ -21,6 +24,10 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError('Please use a different username.')
+    def validate_faculty_id(self, faculty_id):
+        user = User.query.filter_by(faculty_id=faculty_id.data).first()
+        if user is not None:
+            raise ValidationError('This faculty ID is already a user!')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()

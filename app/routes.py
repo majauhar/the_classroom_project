@@ -28,7 +28,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('course'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -48,16 +48,26 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('course'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, fullname=form.fullname.data, faculty_id=form.faculty_id.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/remove/<id>')
+@login_required
+def remove(id):
+    user = User.query.filter_by(id=id).first_or_404()
+    # user.courses.remove_all()
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('login'))
+
 
 @app.route('/course')
 @login_required
@@ -154,10 +164,10 @@ def newassignment(code):
 @app.route('/<code>/openassignment/<id>')
 @login_required
 def openassignment(code, id):
-    user = current_user
+    user = User()
     course = Course.query.filter_by(code=code).first_or_404()
     assignment = Assignment.query.filter_by(id=id).first_or_404()
-    return render_template('assignment.html', assignment = assignment, course=course)
+    return render_template('assignment.html', assignment = assignment, course=course, User=user)
 @app.route('/<code>/<id>/deleteassignment/')
 @login_required
 def deleteassignment(code, id):
@@ -175,10 +185,10 @@ def deleteassignment(code, id):
 @login_required
 def submitassignment(code, id):
     user = current_user
-    form = SubmitAnswer()
+    # form = SubmitAnswer()
     assignment = Assignment.query.filter_by(id=id).first_or_404()
-    if form.validate_on_submit():
-        submission = Submission(body=form.body.data, user_id = user.id, assignment_id=id)
+    if request.method == "POST":
+        submission = Submission(body=request.form.get("body"))
         assignment.submissions.append(submission)
         user.submissions.append(submission)
         db.session.add(submission)
@@ -186,5 +196,15 @@ def submitassignment(code, id):
         
         flash('Congratulations, you have submitted the solution!')
         return redirect(url_for('opencourse', code=code))
-    return render_template('assignmentsubmit.html', title='New submission', form=form)
+    # return render_template('assignmentsubmit.html', title='New submission', form=form)
+
+# problem evaluation
+@app.route('/evaluation/<code>/<problem>/<id>', methods=['GET','POST'])
+@login_required
+def evaluation(code, problem, id):
+    submission= Submission.query.filter_by(id=id).first_or_404()
+    submission.set_mark(request.form.get("marks"))
+    db.session.commit()
+    flash('Submission evaluated!')
+    return redirect(url_for('openassignment', code=code, id=problem))
 

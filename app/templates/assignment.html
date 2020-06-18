@@ -1,8 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>{{ assignment.body }}</p>
-    <p><a href="{{ url_for('submitassignment',code=course.code, id=assignment.id) }}">Submit a Solution!</a></p>
+    <!-- <br>
+    <br>
+    <br> -->
+
+    <h3 style="text-align: left;">{{ assignment.title }}</h3>
+    <hr>
+    <!-- <p style="width:100%; word-wrap: break-word;">{{ assignment.body }}</p> -->
+    <pre style="text-align: justify; font-family: Monaco; white-space: pre-wrap; width:100%;">{{ assignment.body }}</pre>
+
+    <!-- <pre><code class="language-css">{ color : red }</code></pre> -->
+    {% if current_user.id == course.instructor %}
+    <hr>
+    <h3 style="text-align: left;">Submissions</h3>
+    <hr>
+    {% if assignment.submissions.all() %}
+
+    {% for submission in assignment.submissions.all() %}
+    <br>
+        <div class="list-group">
+        <h5>{{ User.query.filter_by(id=submission.user_id).first().fullname }}</h5>
+        <a class="list-group-item list-group-item-action"><pre><code class="lang-clike">{{ submission.body }}
+        </code></pre>
+        </a></li>
+        {% if submission.marks == None %}
+        <form method="POST" action="{{ url_for('evaluation',code=course.code, problem= assignment.id, id=submission.id) }}">
+          <div class="form-group">
+            <label for="sel1">Evaluate:</label>
+            <select class="form-control" id="sel1" name="marks">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+
+            </select>
+          </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        {% else %}
+        <pre>Evaluated! {{ submission.marks }} granted.</pre>
+        {% endif %}
+        
+        </div>
+    
+    {% endfor %}
+    {% else %}
+    <p style="text-align: left;">No submissions yet!</p>
+    {% endif %}
     <p><a href="{{ url_for('deleteassignment', code=course.code, id=assignment.id) }}">Delete the assignment</a></p>
+    {% else %}
+    <form method="POST" action= "{{ url_for('submitassignment', code=course.code, id=assignment.id) }}">
+            <div class="form-group">
+              <label for="comment" >Submit the Solution:</label>
+<!--     
+              <textarea class="form-control" rows="1" id="comment" name="title" placeholder="Enter the Title"></textarea>
+                <br> -->
+              <textarea class="form-control" rows="5" id="comment" name="body" placeholder="Enter the Solution"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <!-- <p><a href="{{ url_for('submitassignment',code=course.code, id=assignment.id) }}">Submit a Solution!</a></p> -->
+    {% endif %}
     
 {% endblock %}
